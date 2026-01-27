@@ -10,6 +10,11 @@ app.get('/signin',function(req,res){
     res.send('{This is sign in page. Please enter your credentials}')
 })
 
-app.listen(process.env.PORT);
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(" listening in port:",$PORT)
+  });
+}
+
 
 module.exports=app;
