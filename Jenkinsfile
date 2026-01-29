@@ -42,20 +42,25 @@ pipeline {
         }
 
         stage('Docker Push') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    bat '''
-                      echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-                      docker push %DOCKER_IMAGE%
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'dockerhub-creds',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS'
+        )]) {
+            bat '''
+              echo Logging into Docker Hub...
+              docker logout
+              echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
 
-                    '''
-                }
-            }
+              echo Pushing image...
+              docker push %DOCKER_IMAGE%
+
+              echo Docker push completed.
+            '''
         }
+    }
+}
 
         stage('Deploy to Kubernetes (Minikube)') {
             steps {
