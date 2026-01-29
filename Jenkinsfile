@@ -19,13 +19,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Unit Test') {
             steps {
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
@@ -37,7 +37,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                bat "docker build -t ${DOCKER_IMAGE} ."
             }
         }
 
@@ -48,8 +48,8 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh '''
-                      echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    bat '''
+                      echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                       docker push ${DOCKER_IMAGE}
                     '''
                 }
@@ -58,22 +58,13 @@ pipeline {
 
         stage('Deploy to Kubernetes (Minikube)') {
             steps {
-                sh '''
+                bat '''
                   kubectl apply -f deployment.yaml
                   kubectl apply -f deploymentservice.yaml
                   kubectl get pods
                   kubectl get svc
                 '''
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'CI/CD Pipeline completed successfully!'
-        }
-        failure {
-            echo 'CI/CD Pipeline failed!'
         }
     }
 }
