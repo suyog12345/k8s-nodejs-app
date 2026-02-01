@@ -20,21 +20,19 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh """
-                  docker build -t ${DOCKER_IMAGE} .
-                """
+                bat "docker build -t %DOCKER_IMAGE% ."
             }
         }
 
@@ -45,9 +43,9 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh """
-                      echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                      docker push ${DOCKER_IMAGE}
+                    bat """
+                      echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                      docker push %DOCKER_IMAGE%
                     """
                 }
             }
@@ -59,11 +57,11 @@ pipeline {
                     credentialsId: 'ec2-ssh-key',
                     keyFileVariable: 'SSH_KEY'
                 )]) {
-                    sh """
-                      ansible-playbook \
-                      -i ansible/inventory.ini \
-                      ansible/deploy.yml \
-                      -e docker_image=${DOCKER_IMAGE}
+                    bat """
+                      ansible-playbook ^
+                      -i ansible\\inventory.ini ^
+                      ansible\\deploy.yml ^
+                      -e docker_image=%DOCKER_IMAGE%
                     """
                 }
             }
