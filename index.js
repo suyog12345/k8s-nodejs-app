@@ -2,6 +2,8 @@ var express = require('express')
 require('dotenv').config();
 var app = express()
 
+const PORT = process.env.PORT || 3000;
+
 app.get('/',function(req,res){
 res.send('{response: Hey there! This is Suyog Sinnarkar}')
 })

@@ -65,8 +65,8 @@ pipeline {
         stage('Deploy to Kubernetes (Minikube)') {
             steps {
                 bat '''
-                  kubectl apply -f deployment.yaml --validate=false
-                  kubectl apply -f deploymentservice.yaml --validate=false
+                  kubectl apply -f deployment.yaml 
+                  kubectl apply -f deploymentservice.yaml 
                   kubectl get pods
                   kubectl get svc
                 '''
