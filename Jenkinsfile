@@ -57,14 +57,14 @@ pipeline {
                     credentialsId: 'ec2-ssh-key',
                     keyFileVariable: 'SSH_KEY'
                 )]) {
-                    bat """
-                      ansible-playbook ^
-                      -i ansible\\inventory.ini ^
-                      ansible\\deploy.yml ^
-                      -e docker_image=%DOCKER_IMAGE%
-                    """
-                }
-            }
+            bat """
+              wsl ansible-playbook \
+              -i ansible/inventory.ini \
+              ansible/deploy.yml \
+              -e docker_image=%DOCKER_IMAGE%
+            """
         }
+    }
+}
     }
 }
