@@ -6,70 +6,66 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = "suyog18/k8s-nodejs-app:latest"
+        DOCKER_IMAGE = "suyog18/k8s-nodejs-app:${BUILD_NUMBER}"
     }
 
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/suyog12345/k8s-nodejs-app.git'
+                git branch: 'main',
+                    url: 'https://github.com/suyog12345/k8s-nodejs-app.git'
             }
         }
 
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                sh 'npm install'
             }
         }
 
-        stage('Unit Test') {
+        stage('Run Tests') {
             steps {
-                bat 'npm test'
+                sh 'npm test'
             }
         }
 
-        stage('Archive Artifact') {
+        stage('Build Docker Image') {
             steps {
-                archiveArtifacts artifacts: '**/*.js, package.json, Dockerfile, deployment*.yaml', fingerprint: true
+                sh """
+                  docker build -t ${DOCKER_IMAGE} .
+                """
             }
         }
 
-        stage('Docker Build') {
+        stage('Push Docker Image') {
             steps {
-                bat "docker build -t ${DOCKER_IMAGE} ."
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh """
+                      echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                      docker push ${DOCKER_IMAGE}
+                    """
+                }
             }
         }
 
-        stage('Docker Push') {
-    steps {
-        withCredentials([usernamePassword(
-            credentialsId: 'dockerhub-creds',
-            usernameVariable: 'DOCKER_USER',
-            passwordVariable: 'DOCKER_PASS'
-        )]) {
-            bat '''
-              echo Logging into Docker Hub...
-              docker logout
-              echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-
-              echo Pushing image...
-              docker push %DOCKER_IMAGE%
-
-              echo Docker push completed.
-            '''
-        }
-    }
-}
-
-        stage('Deploy to Kubernetes (Minikube)') {
+        stage('Deploy using Ansible') {
             steps {
-                bat '''
-                  kubectl apply -f deployment.yaml 
-                  kubectl apply -f deploymentservice.yaml 
-                  kubectl get pods
-                  kubectl get svc
-                '''
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: 'ec2-ssh-key',
+                    keyFileVariable: 'SSH_KEY'
+                )]) {
+                    sh """
+                      ansible-playbook \
+                      -i ansible/inventory.ini \
+                      ansible/deploy.yml \
+                      -e docker_image=${DOCKER_IMAGE}
+                    """
+                }
             }
         }
     }
