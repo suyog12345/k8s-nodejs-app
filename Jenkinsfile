@@ -58,7 +58,7 @@ pipeline {
             keyFileVariable: 'SSH_KEY'
         )]) {
             bat """
-              wsl bash -lc "ansible-playbook \
+              wsl -d Ubuntu-22.04 bash -lc "ansible-playbook \
               -i ansible/inventory.ini \
               ansible/deploy.yml \
               -e docker_image=%DOCKER_IMAGE%"
