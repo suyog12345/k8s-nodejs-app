@@ -58,13 +58,11 @@ pipeline {
             keyFileVariable: 'SSH_KEY'
         )]) {
             bat """
-              wsl -d Ubuntu-22.04 bash -lc "
-              export ANSIBLE_PRIVATE_KEY_FILE=\\$(wslpath '%SSH_KEY%') &&
-              ansible-playbook \
+              for /f %%i in ('wsl wslpath "%SSH_KEY%"') do set WSL_KEY=%%i
+              wsl -d Ubuntu-22.04 bash -lc "ANSIBLE_PRIVATE_KEY_FILE=\\$WSL_KEY ansible-playbook \
                 -i ansible/inventory.ini \
                 ansible/deploy.yml \
-                -e docker_image=%DOCKER_IMAGE%
-              "
+                -e docker_image=%DOCKER_IMAGE%"
             """
         }
     }
