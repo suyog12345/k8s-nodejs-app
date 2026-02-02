@@ -52,16 +52,16 @@ pipeline {
         }
 
         stage('Deploy using Ansible') {
-            steps {
-                withCredentials([sshUserPrivateKey(
-                    credentialsId: 'ec2-ssh-key',
-                    keyFileVariable: 'SSH_KEY'
-                )]) {
+    steps {
+        withCredentials([sshUserPrivateKey(
+            credentialsId: 'ec2-ssh-key',
+            keyFileVariable: 'SSH_KEY'
+        )]) {
             bat """
-              wsl ansible-playbook \
+              wsl bash -lc "ansible-playbook \
               -i ansible/inventory.ini \
               ansible/deploy.yml \
-              -e docker_image=%DOCKER_IMAGE%
+              -e docker_image=%DOCKER_IMAGE%"
             """
         }
     }
