@@ -57,13 +57,19 @@ pipeline {
             credentialsId: 'ec2-ssh-key',
             keyFileVariable: 'SSH_KEY'
         )]) {
-            bat """
+            bat '''
+              @echo off
+              setlocal EnableDelayedExpansion
+
               for /f %%i in ('wsl wslpath "%SSH_KEY%"') do set WSL_KEY=%%i
-              wsl -d Ubuntu-22.04 bash -lc "ANSIBLE_PRIVATE_KEY_FILE=\\$WSL_KEY ansible-playbook \
+
+              wsl -d Ubuntu-22.04 bash -lc "ANSIBLE_PRIVATE_KEY_FILE=!WSL_KEY! ansible-playbook \
                 -i ansible/inventory.ini \
                 ansible/deploy.yml \
                 -e docker_image=%DOCKER_IMAGE%"
-            """
+
+              endlocal
+            '''
         }
     }
 }
