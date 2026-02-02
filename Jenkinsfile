@@ -51,7 +51,7 @@ pipeline {
             }
         }
 
-        stage('Deploy using Ansible') {
+stage('Deploy using Ansible') {
     steps {
         withCredentials([sshUserPrivateKey(
             credentialsId: 'ec2-ssh-key',
@@ -61,9 +61,14 @@ pipeline {
               @echo off
               setlocal EnableDelayedExpansion
 
+              REM Convert Windows SSH key path to WSL path
               for /f %%i in ('wsl wslpath "%SSH_KEY%"') do set WSL_KEY=%%i
 
-              wsl -d Ubuntu-22.04 bash -lc "ANSIBLE_PRIVATE_KEY_FILE=!WSL_KEY! ansible-playbook \
+              REM Copy key into Ubuntu filesystem with correct permissions
+              wsl -d Ubuntu-22.04 bash -lc "cp !WSL_KEY! /tmp/jenkins_ec2_key.pem && chmod 600 /tmp/jenkins_ec2_key.pem"
+
+              REM Run Ansible using the copied key
+              wsl -d Ubuntu-22.04 bash -lc "ANSIBLE_PRIVATE_KEY_FILE=/tmp/jenkins_ec2_key.pem ansible-playbook \
                 -i ansible/inventory.ini \
                 ansible/deploy.yml \
                 -e docker_image=%DOCKER_IMAGE%"
