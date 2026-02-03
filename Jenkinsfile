@@ -61,5 +61,6 @@ stage('Deploy using Ansible') {
         """
     }
 }
+
     }
 }
