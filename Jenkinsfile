@@ -53,15 +53,12 @@ pipeline {
 
 stage('Deploy using Ansible') {
     steps {
-        withCredentials([sshUserPrivateKey(
-            credentialsId: 'ubuntu-ansible-key',
-            keyFileVariable: 'UBUNTU_KEY'
-        )]) {
-            bat """
-              ssh -i "%UBUNTU_KEY%" suyg@<UBUNTU_IP> \
-              "~/deploy.sh %DOCKER_IMAGE%"
-            """
-        }
+        bat """
+        wsl -d Ubuntu-22.04 ansible-playbook ^
+          -i ansible/inventory.ini ^
+          ansible/deploy.yml ^
+          -e docker_image=%DOCKER_IMAGE%
+        """
     }
 }
     }
