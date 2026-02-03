@@ -95,3 +95,8 @@ jobs:
       run: |
         kubectl get pods
         kubectl get svc
+    - name: Verify app via port-forward
+      run: |
+        kubectl port-forward svc/nodeapp-service 5000:5000 &
+        sleep 5
+        curl http://localhost:5000
