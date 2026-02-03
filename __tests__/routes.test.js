@@ -1,24 +1,5 @@
 const request = require('supertest');
-
-let app;
-let server;
-
-beforeAll(() => {
-  // Require index.js ONCE and capture server
-  app = require('../index');
-
-  // Access the internal server from Express
-  server = app.listen ? app : null;
-});
-
-afterAll((done) => {
-  // Close the server so Jest can exit
-  if (server && server.close) {
-    server.close(done);
-  } else {
-    done();
-  }
-});
+const app = require('../index');
 
 describe('Suyog App Routes', () => {
 
@@ -38,4 +19,8 @@ describe('Suyog App Routes', () => {
     expect(res.text).toContain('credentials');
   });
 
+});
+
+afterAll(() => {
+  process.exit(0);
 });
