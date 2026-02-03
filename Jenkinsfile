@@ -53,15 +53,11 @@ pipeline {
 
 stage('Deploy using Ansible') {
     steps {
-        bat """
-        wsl -d Ubuntu-22.04 bash -lc "
-          cd /home/suyg/k8s-nodejs-app &&
-          ansible-playbook \
-            -i ansible/inventory.ini \
-            ansible/deploy.yml \
-            -e docker_image=%DOCKER_IMAGE%
-        "
-        """
+        bat '''
+        wsl -d Ubuntu-22.04 bash -lc "cd /home/suyg/k8s-nodejs-app && \
+        ansible-playbook -i ansible/inventory.ini ansible/deploy.yml \
+        -e docker_image=%DOCKER_IMAGE%"
+        '''
     }
 }
 
