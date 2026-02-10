@@ -9,6 +9,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+
+      - name: SonarQube Scan
+        run: echo "Sonar step ready (will activate after token)"
+
+      - name: Install Snyk
+        run: npm install -g snyk
+
+      - name: Snyk Dependency Security Scan
+        run: snyk test --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Snyk Docker Security Scan
+        run: snyk container test nodeapp:latest
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: DAST Scan (OWASP ZAP)
+        run: |
+          docker run -t ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://3.108.235.107:5000/
+
+
       - name: Checkout code
         uses: actions/checkout@v4
 
