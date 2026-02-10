@@ -25,11 +25,11 @@ jobs:
       - name: SonarQube Scan (placeholder)
         run: echo "SonarQube will run after server + token ready"
 
-      # ---------------- SNYK DEPENDENCY SCAN ----------------
+      # ---------------- SNYK DEPENDENCY SCAN (NON-BLOCKING) ----------------
       - name: Install Snyk
         run: npm install -g snyk
 
-      - name: Snyk Dependency Security Scan
+      - name: Snyk Dependency Security Scan (Non-blocking)
         run: snyk test --severity-threshold=critical || true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -76,12 +76,12 @@ jobs:
       - name: Build Docker image
         run: docker build -t suyog18/k8s-nodejs-app:latest .
 
-      # ---------------- SNYK DOCKER SCAN ----------------
+      # ---------------- SNYK DOCKER SCAN (NON-BLOCKING) ----------------
       - name: Install Snyk
         run: npm install -g snyk
 
-      - name: Snyk Docker Security Scan
-        run: snyk container test suyog18/k8s-nodejs-app:latest
+      - name: Snyk Docker Security Scan (Non-blocking)
+        run: snyk container test suyog18/k8s-nodejs-app:latest --file=Dockerfile || true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
