@@ -102,22 +102,26 @@ jobs:
       - name: Setup KIND Kubernetes cluster
         uses: helm/kind-action@v1.8.0
 
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
       - name: Verify cluster
         run: kubectl cluster-info
 
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl apply -f deployment.yaml
-          kubectl apply -f deploymentservice.yaml
+      - name: Wait for Kubernetes
+        run: kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+      - name: Deploy using Helm
+        run: helm upgrade --install nodeapp ./nodeapp-chart
 
       - name: Wait for deployment
-        run: kubectl rollout status deployment/k8-nodejs-app-deployment --timeout=120s
+        run: kubectl rollout status deployment/nodeapp-nodeapp-chart --timeout=180s
 
       - name: Verify resources
         run: |
           kubectl get pods
           kubectl get svc
-
+          
       - name: Verify app
         run: |
           kubectl port-forward svc/nodeapp-service 5000:5000 &
