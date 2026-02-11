@@ -121,10 +121,10 @@ jobs:
         run: |
           kubectl get pods
           kubectl get svc
-          
+
       - name: Verify app
         run: |
-          kubectl port-forward svc/nodeapp-service 5000:5000 &
+          kubectl port-forward svc/nodeapp-nodeapp-chart 5000:5000 &
           sleep 8
           curl http://localhost:5000
 
