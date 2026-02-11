@@ -125,11 +125,14 @@ jobs:
           curl http://localhost:5000
 
 
-  # ---------------- DAST (TEMP SKIPPED) ----------------
+  #DAST
   dast:
     runs-on: ubuntu-latest
     needs: deploy
     steps:
 
-      - name: DAST Scan (placeholder)
-        run: echo "DAST will run after OWASP ZAP setup"
+      - name: DAST Scan (OWASP ZAP)
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://3.108.235.107:5000'
+
