@@ -21,11 +21,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ---------------- SONARQUBE (TEMP SKIPPED) ----------------
-      - name: SonarQube Scan (placeholder)
-        run: echo "SonarQube will run after server + token ready"
+      # SONARQUBE
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # ---------------- SNYK DEPENDENCY SCAN (NON-BLOCKING) ----------------
+
+      #SNYK DEPENDENCY SCAN (NON-BLOCKING)
       - name: Install Snyk
         run: npm install -g snyk
 
