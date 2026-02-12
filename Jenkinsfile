@@ -109,6 +109,14 @@ pipeline {
                 bat 'powershell Compress-Archive -Path * -DestinationPath app-artifact.zip -Force'
             }
         }
+        stage('Move Artifact to WSL') {
+            steps {
+                bat '''
+                wsl -d Ubuntu-22.04 bash -lc "cp /mnt/c/ProgramData/Jenkins/.jenkins/workspace/k8s-nodejs-jenkins-pipeline/app-artifact.zip /home/suyg/k8s-nodejs-app/"
+                '''
+            }
+        }
+
 
         stage('Deploy using Ansible (Artifact)') {
             steps {
