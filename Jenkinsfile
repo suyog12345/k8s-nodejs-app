@@ -83,10 +83,6 @@ pipeline {
         nodejs 'Node18'
     }
 
-    environment {
-        DOCKER_IMAGE = "suyog18/k8s-nodejs-app:${BUILD_NUMBER}"
-    }
-
     stages {
 
         stage('Checkout Code') {
@@ -108,37 +104,20 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Artifact') {
             steps {
-                bat "docker build -t %DOCKER_IMAGE% ."
+                bat 'powershell Compress-Archive -Path * -DestinationPath app-artifact.zip -Force'
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Deploy using Ansible (Artifact)') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    bat """
-                      echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-                      docker push %DOCKER_IMAGE%
-                    """
-                }
+                bat '''
+                wsl -d Ubuntu-22.04 bash -lc "cd /home/suyg/k8s-nodejs-app && \
+                ansible-playbook -i ansible/inventory.ini ansible/deploy.yml"
+                '''
             }
         }
-
-stage('Deploy using Ansible') {
-    steps {
-        bat '''
-        wsl -d Ubuntu-22.04 bash -lc "cd /home/suyg/k8s-nodejs-app && \
-        ansible-playbook -i ansible/inventory.ini ansible/deploy.yml \
-        -e docker_image=%DOCKER_IMAGE%"
-        '''
     }
 }
 
-
-    }
-}
