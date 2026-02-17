@@ -19,17 +19,29 @@ jobs:
       # FETCH SECRETS FROM VAULT
       - name: Fetch secrets from Vault
         run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq
+
           VAULT_ADDR="https://abc123.ngrok-free.app"
           VAULT_TOKEN="root"
+
+          echo "Fetching secrets from Vault..."
 
           RESPONSE=$(curl -s \
             -H "X-Vault-Token: $VAULT_TOKEN" \
             $VAULT_ADDR/v1/secret/data/nodeapp)
 
-          echo "SONAR_TOKEN=$(echo $RESPONSE | jq -r '.data.data.sonar_token')" >> $GITHUB_ENV
-          echo "DOCKERHUB_USERNAME=$(echo $RESPONSE | jq -r '.data.data.docker_username')" >> $GITHUB_ENV
-          echo "DOCKERHUB_TOKEN=$(echo $RESPONSE | jq -r '.data.data.docker_token')" >> $GITHUB_ENV
-          echo "SNYK_TOKEN=$(echo $RESPONSE | jq -r '.data.data.snyk_token')" >> $GITHUB_ENV
+          echo "$RESPONSE"
+
+          SONAR=$(echo $RESPONSE | jq -r '.data.data.sonar_token')
+          DOCKER_USER=$(echo $RESPONSE | jq -r '.data.data.docker_username')
+          DOCKER_PASS=$(echo $RESPONSE | jq -r '.data.data.docker_token')
+          SNYK=$(echo $RESPONSE | jq -r '.data.data.snyk_token')
+
+          echo "SONAR_TOKEN=$SONAR" >> $GITHUB_ENV
+          echo "DOCKERHUB_USERNAME=$DOCKER_USER" >> $GITHUB_ENV
+          echo "DOCKERHUB_TOKEN=$DOCKER_PASS" >> $GITHUB_ENV
+          echo "SNYK_TOKEN=$SNYK" >> $GITHUB_ENV
 
       - name: Debug Vault fetch
         run: |
