@@ -33,9 +33,9 @@ jobs:
 
       - name: Debug Vault fetch
         run: |
-        echo "SONAR_TOKEN is: ${SONAR_TOKEN:+SET}"
-        echo "DOCKER USER is: ${DOCKERHUB_USERNAME:+SET}"
-        echo "SNYK TOKEN is: ${SNYK_TOKEN:+SET}"
+          echo "SONAR_TOKEN is: ${SONAR_TOKEN:+SET}"
+          echo "DOCKER USER is: ${DOCKERHUB_USERNAME:+SET}"
+          echo "SNYK TOKEN is: ${SNYK_TOKEN:+SET}"
 
 
       - uses: actions/setup-node@v4
