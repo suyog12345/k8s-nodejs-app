@@ -22,7 +22,7 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y jq
 
-          VAULT_ADDR="https://abc123.ngrok-free.app"
+          VAULT_ADDR="https://chattily-nonoperatic-ginger.ngrok-free.dev"
           VAULT_TOKEN="root"
 
           echo "Fetching secrets from Vault..."
@@ -109,7 +109,7 @@ jobs:
       #FETCH SECRETS FROM VAULT
       - name: Fetch secrets from Vault
         run: |
-          VAULT_ADDR="https://abc123.ngrok-free.app"
+          VAULT_ADDR="https://chattily-nonoperatic-ginger.ngrok-free.dev"
           VAULT_TOKEN="root"
 
           RESPONSE=$(curl -s \
