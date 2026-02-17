@@ -19,7 +19,7 @@ jobs:
       # FETCH SECRETS FROM VAULT
       - name: Fetch secrets from Vault
         run: |
-          VAULT_ADDR="http://host.docker.internal:8200"
+          VAULT_ADDR="https://abc123.ngrok-free.app"
           VAULT_TOKEN="root"
 
           RESPONSE=$(curl -s \
