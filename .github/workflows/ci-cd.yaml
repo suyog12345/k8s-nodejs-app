@@ -31,6 +31,13 @@ jobs:
           echo "DOCKERHUB_TOKEN=$(echo $RESPONSE | jq -r '.data.data.docker_token')" >> $GITHUB_ENV
           echo "SNYK_TOKEN=$(echo $RESPONSE | jq -r '.data.data.snyk_token')" >> $GITHUB_ENV
 
+      - name: Debug Vault fetch
+        run: |
+        echo "SONAR_TOKEN is: ${SONAR_TOKEN:+SET}"
+        echo "DOCKER USER is: ${DOCKERHUB_USERNAME:+SET}"
+        echo "SNYK TOKEN is: ${SNYK_TOKEN:+SET}"
+
+
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
