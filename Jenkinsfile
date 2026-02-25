@@ -106,13 +106,9 @@ pipeline {
 
         stage('Build Artifact') {
             steps {
-                sh '''
-                apt-get update
-                apt-get install -y zip
-                zip -r app-artifact.zip .
-                '''
-    }
-}
+                sh 'tar -czf app-artifact.tar.gz .'
+            }
+        }
 
         stage('Deploy using Ansible') {
             steps {
