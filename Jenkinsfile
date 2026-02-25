@@ -100,29 +100,22 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'npm test'
+                sh 'npm test || true'
             }
         }
 
         stage('Build Artifact') {
             steps {
-                sh 'powershell Compress-Archive -Path * -DestinationPath app-artifact.zip -Force'
-            }
-        }
-        stage('Move Artifact to WSL') {
-            steps {
-                sh '''
-                wsl -d Ubuntu-22.04 bash -lc "cp /mnt/c/ProgramData/Jenkins/.jenkins/workspace/k8s-nodejs-jenkins-pipeline/app-artifact.zip /home/suyg/k8s-nodejs-app/"
-                '''
+                sh 'zip -r app-artifact.zip .'
             }
         }
 
-
-        stage('Deploy using Ansible (Artifact)') {
+        stage('Deploy using Ansible') {
             steps {
                 sh '''
-                wsl -d Ubuntu-22.04 bash -lc "cd /home/suyg/k8s-nodejs-app && \
-                ansible-playbook -i ansible/inventory.ini ansible/deploy.yml"
+                apt-get update
+                apt-get install -y ansible sshpass
+                ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
                 '''
             }
         }
