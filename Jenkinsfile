@@ -111,14 +111,16 @@ pipeline {
         }
 
         stage('Deploy using Ansible') {
+            agent {
+                docker {
+                    image 'willhallonline/ansible:latest'
+                    args '-u root'
+                }
+            }
             steps {
                 sh '''
-                apt-get update
-                apt-get install -y ansible sshpass
+                ansible --version
                 ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
                 '''
             }
         }
-    }
-}
-
