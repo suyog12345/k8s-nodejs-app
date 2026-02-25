@@ -113,13 +113,8 @@ pipeline {
         stage('Deploy using Ansible') {
     steps {
         sh '''
-        python3 -m venv venv
-        . venv/bin/activate
-        pip install --upgrade pip
-        pip install ansible
-
-        ansible --version
-        ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
+        ssh -o StrictHostKeyChecking=no suyg@host.docker.internal \
+        "cd /home/suyg/k8s-nodejs-app && ansible-playbook -i ansible/inventory.ini ansible/deploy.yml"
         '''
     }
 }
