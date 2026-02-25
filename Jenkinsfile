@@ -110,11 +110,11 @@ pipeline {
             }
         }
 
-        stage('Deploy using Ansible') {
+        stage('Deploy Trigger') {
     steps {
         sh '''
-        ssh -o StrictHostKeyChecking=no suyg@host.docker.internal \
-        "cd /home/suyg/k8s-nodejs-app && ansible-playbook -i ansible/inventory.ini ansible/deploy.yml"
+        echo "Build complete - artifact ready"
+        ls -lh app-artifact.tar.gz
         '''
     }
 }
