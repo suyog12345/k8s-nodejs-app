@@ -77,10 +77,10 @@
 
 //for ansible
 pipeline {
-    agent any
-
-    tools {
-        nodejs 'Node18'
+    agent {
+        docker {
+            image 'node:18'
+        }
     }
 
     stages {
@@ -100,18 +100,18 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                bat 'npm test'
+                sh 'npm test'
             }
         }
 
         stage('Build Artifact') {
             steps {
-                bat 'powershell Compress-Archive -Path * -DestinationPath app-artifact.zip -Force'
+                sh 'powershell Compress-Archive -Path * -DestinationPath app-artifact.zip -Force'
             }
         }
         stage('Move Artifact to WSL') {
             steps {
-                bat '''
+                sh '''
                 wsl -d Ubuntu-22.04 bash -lc "cp /mnt/c/ProgramData/Jenkins/.jenkins/workspace/k8s-nodejs-jenkins-pipeline/app-artifact.zip /home/suyg/k8s-nodejs-app/"
                 '''
             }
@@ -120,7 +120,7 @@ pipeline {
 
         stage('Deploy using Ansible (Artifact)') {
             steps {
-                bat '''
+                sh '''
                 wsl -d Ubuntu-22.04 bash -lc "cd /home/suyg/k8s-nodejs-app && \
                 ansible-playbook -i ansible/inventory.ini ansible/deploy.yml"
                 '''
