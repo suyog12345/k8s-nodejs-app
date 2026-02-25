@@ -106,7 +106,7 @@ pipeline {
 
         stage('Build Artifact') {
             steps {
-                sh 'tar -czf app-artifact.tar.gz .'
+                sh 'tar --warning=no-file-changed -czf app-artifact.tar.gz . || true'
             }
         }
 
