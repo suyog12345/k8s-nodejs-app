@@ -111,14 +111,13 @@ pipeline {
         }
 
         stage('Deploy using Ansible') {
-    agent {
-        docker {
-            image 'willhallonline/ansible:latest'
-            args '-u root'
-        }
-    }
     steps {
         sh '''
+        python3 -m venv venv
+        . venv/bin/activate
+        pip install --upgrade pip
+        pip install ansible
+
         ansible --version
         ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
         '''
