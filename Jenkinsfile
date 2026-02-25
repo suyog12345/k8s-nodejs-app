@@ -111,16 +111,19 @@ pipeline {
         }
 
         stage('Deploy using Ansible') {
-            agent {
-                docker {
-                    image 'willhallonline/ansible:latest'
-                    args '-u root'
-                }
-            }
-            steps {
-                sh '''
-                ansible --version
-                ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
-                '''
-            }
+    agent {
+        docker {
+            image 'willhallonline/ansible:latest'
+            args '-u root'
         }
+    }
+    steps {
+        sh '''
+        ansible --version
+        ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
+        '''
+    }
+}
+    }
+}
+
